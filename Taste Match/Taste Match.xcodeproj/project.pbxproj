@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		3FB3A0B62FC93E9200D4462C /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 3FB3A0B52FC93E9200D4462C /* Supabase */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		3FB39FFD2FC92B8A00D4462C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +31,7 @@
 		3FB39FEF2FC92B8900D4462C /* Taste Match.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Taste Match.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3FB39FFC2FC92B8A00D4462C /* Taste MatchTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Taste MatchTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3FB3A0062FC92B8A00D4462C /* Taste MatchUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Taste MatchUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3FB3A05A2FC932AD00D4462C /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -52,6 +57,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3FB3A0B62FC93E9200D4462C /* Supabase in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +84,7 @@
 				3FB39FF12FC92B8900D4462C /* Taste Match */,
 				3FB39FFF2FC92B8A00D4462C /* Taste MatchTests */,
 				3FB3A0092FC92B8A00D4462C /* Taste MatchUITests */,
+				3FB3A0592FC932AD00D4462C /* Frameworks */,
 				3FB39FF02FC92B8900D4462C /* Products */,
 			);
 			sourceTree = "<group>";
@@ -90,6 +97,14 @@
 				3FB3A0062FC92B8A00D4462C /* Taste MatchUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		3FB3A0592FC932AD00D4462C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				3FB3A05A2FC932AD00D4462C /* XCTest.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -112,6 +127,7 @@
 			);
 			name = "Taste Match";
 			packageProductDependencies = (
+				3FB3A0B52FC93E9200D4462C /* Supabase */,
 			);
 			productName = "Taste Match";
 			productReference = 3FB39FEF2FC92B8900D4462C /* Taste Match.app */;
@@ -195,6 +211,9 @@
 			);
 			mainGroup = 3FB39FE62FC92B8900D4462C;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				3FB3A0B42FC93E7C00D4462C /* XCRemoteSwiftPackageReference "supabase-swift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 3FB39FF02FC92B8900D4462C /* Products */;
 			projectDirPath = "";
@@ -605,6 +624,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		3FB3A0B42FC93E7C00D4462C /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/supabase/supabase-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.5.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		3FB3A0B52FC93E9200D4462C /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3FB3A0B42FC93E7C00D4462C /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 3FB39FE72FC92B8900D4462C /* Project object */;
 }
