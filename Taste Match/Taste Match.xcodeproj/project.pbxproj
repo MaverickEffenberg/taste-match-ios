@@ -7,7 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3FB3A0B62FC93E9200D4462C /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 3FB3A0B52FC93E9200D4462C /* Supabase */; };
+		3FB3A0D12FC959C500D4462C /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = 3FB3A0D02FC959C500D4462C /* Auth */; };
+		3FB3A0D32FC959CE00D4462C /* Storage in Frameworks */ = {isa = PBXBuildFile; productRef = 3FB3A0D22FC959CE00D4462C /* Storage */; };
+		3FB3A0D52FC959F900D4462C /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 3FB3A0D42FC959F900D4462C /* Supabase */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,9 +36,22 @@
 		3FB3A05A2FC932AD00D4462C /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		3FB3A0DC2FC97BB300D4462C /* Exceptions for "Taste Match" folder in "Taste Match" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"Taste-Match-Info.plist",
+			);
+			target = 3FB39FEE2FC92B8900D4462C /* Taste Match */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		3FB39FF12FC92B8900D4462C /* Taste Match */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				3FB3A0DC2FC97BB300D4462C /* Exceptions for "Taste Match" folder in "Taste Match" target */,
+			);
 			path = "Taste Match";
 			sourceTree = "<group>";
 		};
@@ -57,7 +72,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3FB3A0B62FC93E9200D4462C /* Supabase in Frameworks */,
+				3FB3A0D32FC959CE00D4462C /* Storage in Frameworks */,
+				3FB3A0D12FC959C500D4462C /* Auth in Frameworks */,
+				3FB3A0D52FC959F900D4462C /* Supabase in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -127,7 +144,9 @@
 			);
 			name = "Taste Match";
 			packageProductDependencies = (
-				3FB3A0B52FC93E9200D4462C /* Supabase */,
+				3FB3A0D02FC959C500D4462C /* Auth */,
+				3FB3A0D22FC959CE00D4462C /* Storage */,
+				3FB3A0D42FC959F900D4462C /* Supabase */,
 			);
 			productName = "Taste Match";
 			productReference = 3FB39FEF2FC92B8900D4462C /* Taste Match.app */;
@@ -413,6 +432,10 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Taste-Match-Info.plist";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Match Taste uses your camera to record recipe videos";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Match Taste uses your microphone to record sound";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Match Taste uses your library to upload files";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -455,6 +478,10 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Taste-Match-Info.plist";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Match Taste uses your camera to record recipe videos";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Match Taste uses your microphone to record sound";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Match Taste uses your library to upload files";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -637,7 +664,17 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		3FB3A0B52FC93E9200D4462C /* Supabase */ = {
+		3FB3A0D02FC959C500D4462C /* Auth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3FB3A0B42FC93E7C00D4462C /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Auth;
+		};
+		3FB3A0D22FC959CE00D4462C /* Storage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3FB3A0B42FC93E7C00D4462C /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Storage;
+		};
+		3FB3A0D42FC959F900D4462C /* Supabase */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 3FB3A0B42FC93E7C00D4462C /* XCRemoteSwiftPackageReference "supabase-swift" */;
 			productName = Supabase;

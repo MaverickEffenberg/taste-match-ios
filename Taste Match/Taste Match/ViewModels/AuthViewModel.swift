@@ -1,6 +1,8 @@
 
 import Foundation
 import Combine
+import Auth
+import Supabase
 
 @MainActor
 final class AuthViewModel: ObservableObject {
@@ -22,7 +24,20 @@ final class AuthViewModel: ObservableObject {
     }
 
     private func restoreSession() async {
-        currentUser = localStore.fetchCurrentUser()
+        // Check live Supabase session first
+        if let session = try? await supabase.auth.session {
+            let user = session.user
+            let profile = UserProfile(
+                id: user.id,
+                email: user.email ?? "",
+                username: user.email?.components(separatedBy: "@").first ?? "User"
+            )
+            localStore.upsertUser(profile)
+            currentUser = profile
+        } else {
+            // Fall back to local cache
+            currentUser = localStore.fetchCurrentUser()
+        }
     }
 
     func signInWithGoogle() async {

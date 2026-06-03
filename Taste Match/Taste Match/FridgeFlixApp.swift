@@ -1,6 +1,8 @@
 
 import SwiftUI
 import SwiftData
+import Auth
+import Supabase
 
 @main
 struct FridgeFlixApp: App {
@@ -29,6 +31,11 @@ struct FridgeFlixApp: App {
             ContentView()
                 .environmentObject(authVM)
                 .environmentObject(profileVM)
+                .onOpenURL { url in
+                            Task {
+                                try? await supabase.auth.session(from: url)
+                            }
+                        }
         }
         .modelContainer(sharedModelContainer)
 
