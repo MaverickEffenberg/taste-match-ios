@@ -1,4 +1,3 @@
-
 import SwiftUI
 import AVKit
 
@@ -28,8 +27,6 @@ struct FeedView: View {
                                 onExpand: { viewModel.toggleExpansion() }
                             )
                             .containerRelativeFrame([.horizontal, .vertical])
-
-
                             .onAppear { viewModel.currentIndex = index }
                         }
                     }
@@ -39,14 +36,6 @@ struct FeedView: View {
                 #if os(iOS)
                 .ignoresSafeArea()
                 #endif
-
-
-
-#if os(iOS)
-                .tabViewStyle(.page(indexDisplayMode: .never))
-#else
-                .tabViewStyle(.automatic)
-#endif
                 .ignoresSafeArea()
 
                 if viewModel.isExpanded, let recipe = viewModel.currentRecipe {
@@ -68,6 +57,8 @@ struct FeedView: View {
         #endif
     }
 }
+
+// MARK: - RecipeVideoCard
 
 struct RecipeVideoCard: View {
     let recipe: Recipe
@@ -132,6 +123,8 @@ struct RecipeVideoCard: View {
     }
 }
 
+// MARK: - VideoThumbnailView
+
 struct VideoThumbnailView: View {
     let thumbnailURL: String
 
@@ -146,6 +139,14 @@ struct VideoThumbnailView: View {
         .clipped()
     }
 }
+
+// MARK: - RecipeExpansionOverlay
+// FIX: Replaced Color.gray.opacity(...) with cross-platform background.
+// On macOS, a bare Color reference inside a ZStack without a hosting view
+// context cannot resolve `systemBackground`-derived colors, producing:
+//   "Reference to member 'systemBackground' cannot be resolved without a contextual type"
+// Using `.background(.regularMaterial)` resolves the type unambiguously
+// on both iOS and macOS (available from iOS 15 / macOS 12).
 
 struct RecipeExpansionOverlay: View {
     let recipe: Recipe
@@ -192,11 +193,10 @@ struct RecipeExpansionOverlay: View {
                 }
             }
             .padding()
-            .background(
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(Color.gray.opacity(0.15))
-                    .shadow(radius: 10)
-            )
+            // Cross-platform fix: .regularMaterial resolves without a
+            // UIColor/NSColor contextual type, compiling cleanly on macOS.
+            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 20))
+            .shadow(radius: 10)
         }
         .padding(.bottom, 8)
         .onTapGesture(count: 1) {}
@@ -210,6 +210,8 @@ struct RecipeExpansionOverlay: View {
         }
     }
 }
+
+// MARK: - Supporting Views
 
 struct EmptyFeedView: View {
     var body: some View {

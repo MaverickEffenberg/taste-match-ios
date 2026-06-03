@@ -1,6 +1,10 @@
 import Combine
 import Foundation
 
+// MARK: - Admin ViewModel
+// Manages master data (ingredients, diet tags) and content moderation
+// for the Admin Dashboard. All mutations go directly to Supabase and
+// are reflected immediately in the local published arrays.
 @MainActor
 final class AdminViewModel: ObservableObject {
 
@@ -16,9 +20,12 @@ final class AdminViewModel: ObservableObject {
 
     init(adminService: AdminServiceProtocol = SupabaseAdminService()) {
         self.adminService = adminService
+        // Load all three datasets in parallel as soon as the view model is created
         Task { await loadAll() }
     }
 
+    // Fetches master ingredients, diet tags, and pending content concurrently
+    // using async let so the three network calls run in parallel.
     func loadAll() async {
         isLoading = true
         async let ingredients = adminService.fetchMasterIngredients()
@@ -34,7 +41,10 @@ final class AdminViewModel: ObservableObject {
         isLoading = false
     }
 
+    // MARK: Ingredient Management
 
+    // Creates a new ingredient in Supabase and appends it to the local list
+    // so the admin sees the change instantly without a full reload.
     func addIngredient(name: String, category: String, allergenTags: [String]) async {
         let ingredient = MasterIngredient(name: name, category: category, allergenTags: allergenTags)
         do {
@@ -49,6 +59,7 @@ final class AdminViewModel: ObservableObject {
     func updateIngredient(_ ingredient: MasterIngredient) async {
         do {
             try await adminService.updateIngredient(ingredient)
+            // Replace the stale copy in the local array with the updated one
             if let index = masterIngredients.firstIndex(where: { $0.id == ingredient.id }) {
                 masterIngredients[index] = ingredient
             }
@@ -58,12 +69,16 @@ final class AdminViewModel: ObservableObject {
         }
     }
 
+    // Soft-deletes an ingredient by setting is_active = false.
+    // This preserves referential integrity for existing recipes that
+    // include the ingredient in their ingredients array.
     func deactivateIngredient(_ ingredient: MasterIngredient) async {
         var updated = ingredient
         updated.isActive = false
         await updateIngredient(updated)
     }
 
+    // MARK: Diet Tag Management
 
     func addDietTag(name: String, iconName: String) async {
         let tag = MasterDietTag(name: name, iconName: iconName)
@@ -76,6 +91,7 @@ final class AdminViewModel: ObservableObject {
         }
     }
 
+    // Soft-deletes a diet tag so it no longer appears in user profile toggles
     func deactivateDietTag(_ tag: MasterDietTag) async {
         var updated = tag
         updated.isActive = false
@@ -89,7 +105,10 @@ final class AdminViewModel: ObservableObject {
         }
     }
 
+    // MARK: Content Moderation
 
+    // Sets a pending submission to "approved", which should trigger a
+    // Supabase DB function/trigger to copy the recipe into the public feed.
     func approveContent(_ content: PendingContent) async {
         do {
             try await adminService.updateContentStatus(content.id, status: "approved")
@@ -100,6 +119,8 @@ final class AdminViewModel: ObservableObject {
         }
     }
 
+    // Rejects a submission with an optional note explaining the decision,
+    // which can be surfaced to the creator in a future notification feature.
     func rejectContent(_ content: PendingContent, note: String) async {
         do {
             try await adminService.updateContentStatus(content.id, status: "rejected", note: note)
@@ -109,6 +130,7 @@ final class AdminViewModel: ObservableObject {
         }
     }
 
+    // Updates the status in the local array to avoid re-fetching from Supabase
     private func updateLocalStatus(_ id: UUID, status: String) {
         if let i = pendingContent.firstIndex(where: { $0.id == id }) {
             pendingContent[i].status = status

@@ -1,4 +1,3 @@
-
 import SwiftUI
 
 struct ContentView: View {
@@ -36,18 +35,27 @@ struct MainTabView: View {
 
     var body: some View {
         TabView {
+            // MARK: Discover
             FeedView(viewModel: feedVM, profileVM: profileVM)
                 .tabItem { Label("Discover", systemImage: "play.tv") }
 
+            // MARK: Search
             SearchView(viewModel: searchVM, profileVM: profileVM)
                 .tabItem { Label("Search", systemImage: "magnifyingglass") }
 
+            // MARK: Create  ← new tab visible to all logged-in users
+            CreateRecipeTabView()
+                .tabItem { Label("Create", systemImage: "plus.circle.fill") }
+
+            // MARK: Saved
             PlaylistView(profileVM: profileVM)
                 .tabItem { Label("Saved", systemImage: "bookmark") }
 
+            // MARK: Profile
             ProfileView(profileVM: profileVM, authVM: authVM)
                 .tabItem { Label("Profile", systemImage: "person.crop.circle") }
 
+            // MARK: Admin (role-gated)
             if authVM.isAdmin {
                 AdminDashboardView(adminVM: adminVM)
                     .tabItem { Label("Admin", systemImage: "shield.checkered") }
@@ -58,6 +66,53 @@ struct MainTabView: View {
         #endif
     }
 }
+
+// MARK: - Create Tab Container
+// Hosts both CreateRecipeView and MySubmissionsView in a NavigationSplitView
+// on macOS (sidebar + detail) or as a segmented NavigationStack on iOS.
+
+struct CreateRecipeTabView: View {
+    @StateObject private var creatorVM = CreatorViewModel()
+
+    #if os(iOS)
+    @State private var selectedSegment = 0
+    #endif
+
+    var body: some View {
+        #if os(iOS)
+        NavigationStack {
+            Group {
+                switch selectedSegment {
+                case 0:  CreateRecipeView()
+                default: MySubmissionsView()
+                }
+            }
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Picker("", selection: $selectedSegment) {
+                        Text("New Recipe").tag(0)
+                        Text("My Submissions").tag(1)
+                    }
+                    .pickerStyle(.segmented)
+                    .frame(width: 260)
+                }
+            }
+        }
+        #else
+        NavigationSplitView {
+            List {
+                NavigationLink("New Recipe",    destination: CreateRecipeView())
+                NavigationLink("My Submissions", destination: MySubmissionsView())
+            }
+            .navigationTitle("Create")
+        } detail: {
+            CreateRecipeView()
+        }
+        #endif
+    }
+}
+
+// MARK: - LoginView (unchanged)
 
 struct LoginView: View {
     @EnvironmentObject var authVM: AuthViewModel
