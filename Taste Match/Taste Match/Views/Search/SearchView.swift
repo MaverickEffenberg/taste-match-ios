@@ -1,6 +1,9 @@
-
 import SwiftUI
 
+// MARK: - Search View
+// Ingredient-First Filter Search: users build a basket of ingredients
+// they have at home; the view shows matching recipes ranked by overlap count.
+// The Global Dietary Profile is applied on top of the results.
 struct SearchView: View {
     @ObservedObject var viewModel: SearchViewModel
     @ObservedObject var profileVM: ProfileViewModel
@@ -9,13 +12,17 @@ struct SearchView: View {
         NavigationStack {
             VStack(spacing: 0) {
 
+                // Search input + ingredient chips panel
                 VStack(alignment: .leading, spacing: 10) {
+
+                    // Text field with a clear button
                     HStack {
                         Image(systemName: "magnifyingglass")
                             .foregroundColor(.secondary)
 
                         TextField("Type an ingredient…", text: $viewModel.searchQuery)
                             .autocorrectionDisabled()
+                            // Allow adding an ingredient by pressing Return
                             .onSubmit {
                                 viewModel.addIngredient(viewModel.searchQuery)
                             }
@@ -32,6 +39,8 @@ struct SearchView: View {
                     .cornerRadius(10)
                     .padding(.horizontal)
 
+                    // Autocomplete suggestions fetched from master_ingredients
+                    // using a 300 ms debounce to limit Supabase queries.
                     if !viewModel.suggestions.isEmpty {
                         SuggestionList(suggestions: viewModel.suggestions) { name in
                             viewModel.addIngredient(name)
@@ -39,6 +48,8 @@ struct SearchView: View {
                         .padding(.horizontal)
                     }
 
+                    // Horizontal scrolling row of chips for selected ingredients.
+                    // Tapping the × on a chip removes it and re-runs the search.
                     if !viewModel.selectedIngredients.isEmpty {
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack {
@@ -57,20 +68,27 @@ struct SearchView: View {
 
                 Divider()
 
+                // Results area — switches between states based on search status
                 if viewModel.isSearching {
                     Spacer()
                     ProgressView("Searching…")
                     Spacer()
 
                 } else if viewModel.selectedIngredients.isEmpty {
+                    // Prompt shown before the user has entered any ingredients
                     SearchPromptView()
 
                 } else if viewModel.searchResults.isEmpty {
                     NoResultsView()
 
                 } else {
+                    // Ranked result list — recipes with the most ingredient
+                    // matches are sorted to the top by SearchViewModel.
                     List(viewModel.searchResults) { recipe in
-                        RecipeSearchRow(recipe: recipe, isSaved: profileVM.isSaved(recipe)) {
+                        RecipeSearchRow(
+                            recipe: recipe,
+                            isSaved: profileVM.isSaved(recipe)
+                        ) {
                             profileVM.saveRecipe(recipe)
                         }
                     }
@@ -81,6 +99,8 @@ struct SearchView: View {
         }
     }
 }
+
+// MARK: - Suggestion Dropdown
 
 struct SuggestionList: View {
     let suggestions: [String]
@@ -109,6 +129,9 @@ struct SuggestionList: View {
     }
 }
 
+// MARK: - Ingredient Chip
+// Tappable pill showing a selected ingredient. The × removes it from
+// the search basket and triggers a new search automatically.
 struct IngredientChip: View {
     let name: String
     let onRemove: () -> Void
@@ -130,6 +153,9 @@ struct IngredientChip: View {
     }
 }
 
+// MARK: - Recipe Search Row
+// Compact list row used in search results, matching the style of the
+// Playlist tab rows for visual consistency.
 struct RecipeSearchRow: View {
     let recipe: Recipe
     let isSaved: Bool
@@ -172,6 +198,8 @@ struct RecipeSearchRow: View {
         .padding(.vertical, 4)
     }
 }
+
+// MARK: - Empty/Prompt States
 
 struct SearchPromptView: View {
     var body: some View {

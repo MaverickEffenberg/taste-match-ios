@@ -1,4 +1,3 @@
-
 import SwiftUI
 import SwiftData
 import Auth
@@ -32,10 +31,14 @@ struct FridgeFlixApp: App {
                 .environmentObject(authVM)
                 .environmentObject(profileVM)
                 .onOpenURL { url in
-                            Task {
-                                try? await supabase.auth.session(from: url)
-                            }
-                        }
+                    // After Google OAuth redirects back to the app, this feeds
+                    // the URL into Supabase which completes the token exchange
+                    // and fires .signedIn on authStateChanges → AuthViewModel
+                    // picks it up and sets currentUser.
+                    Task {
+                        try? await supabase.auth.session(from: url)
+                    }
+                }
         }
         .modelContainer(sharedModelContainer)
 
