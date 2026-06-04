@@ -102,11 +102,17 @@ final class AuthViewModel: ObservableObject {
     // MARK: - Sign Out
 
     func signOut() async {
+        isLoading = true
         do {
             try await supabase.auth.signOut()
+            // Pemicu manual agar UI tahu kamu sudah keluar
+            await MainActor.run {
+                self.currentUser = nil
+            }
         } catch {
             errorMessage = error.localizedDescription
         }
+        isLoading = false
     }
 
     var isAdmin: Bool { currentUser?.isAdmin ?? false }
