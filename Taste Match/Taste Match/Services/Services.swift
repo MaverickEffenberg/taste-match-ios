@@ -22,6 +22,8 @@ protocol RecipeServiceProtocol {
     func fetchApprovedRecipes() async throws -> [Recipe]
     func searchByIngredients(_ ingredients: [String]) async throws -> [Recipe]
     func fetchIngredientSuggestions(prefix: String) async throws -> [String]
+    // Tambahan krusial untuk memenuhi pilar Media Delivery di proposal!
+    func fetchMediaPublicURL(bucket: String, path: String) -> URL
 }
 
 protocol ProfileServiceProtocol {
@@ -119,10 +121,6 @@ struct ProfileDTO: Decodable {
 final class SupabaseAuthService: AuthServiceProtocol {
 
     func signInWithGoogle() async throws -> UserProfile {
-        // redirectTo must match:
-        //   1. The custom URL scheme registered in Info.plist (CFBundleURLTypes)
-        //   2. The redirect URL added in Supabase Dashboard → Auth → URL Configuration
-        //   3. The authorized redirect URI in Google Cloud Console (the Supabase callback URL)
         try await supabase.auth.signInWithOAuth(
             provider: .google,
             redirectTo: URL(string: "io.tastematch.app://auth/callback")!
@@ -134,21 +132,14 @@ final class SupabaseAuthService: AuthServiceProtocol {
         try await supabase.auth.signOut()
     }
 
-    // Called on launch to restore a previously authenticated session
-    // without requiring the user to log in again.
     func currentSession() async throws -> UserProfile? {
         guard let _ = try? await supabase.auth.session else { return nil }
         return try? await buildProfileFromSession()
     }
 
-    // Pulls the Supabase auth user and merges it with the profiles table
-    // to get role and dietary preferences stored server-side.
     private func buildProfileFromSession() async throws -> UserProfile {
         let user = try await supabase.auth.session.user
 
-        // Try to load the extended profile row from the profiles table.
-        // Fall back to a minimal profile if the row doesn't exist yet
-        // (e.g. first sign-in before the DB trigger creates the row).
         struct ProfileRow: Decodable {
             let username: String?
             let avatarUrl: String?
@@ -194,8 +185,6 @@ final class SupabaseAuthService: AuthServiceProtocol {
 
 final class SupabaseRecipeService: RecipeServiceProtocol {
 
-    // Fetches only admin-approved recipes so unapproved creator uploads
-    // never appear in the public feed.
     func fetchApprovedRecipes() async throws -> [Recipe] {
         let response: [RecipeDTO] = try await supabase
             .from("recipes")
@@ -206,8 +195,6 @@ final class SupabaseRecipeService: RecipeServiceProtocol {
         return response.map { $0.toRecipe() }
     }
 
-    // Returns recipes that contain at least one of the supplied ingredients.
-    // The overlaps operator maps to the PostgreSQL && array operator.
     func searchByIngredients(_ ingredients: [String]) async throws -> [Recipe] {
         let response: [RecipeDTO] = try await supabase
             .from("recipes")
@@ -218,8 +205,6 @@ final class SupabaseRecipeService: RecipeServiceProtocol {
         return response.map { $0.toRecipe() }
     }
 
-    // Powers the autocomplete dropdown in the search bar.
-    // ilike performs a case-insensitive prefix match.
     func fetchIngredientSuggestions(prefix: String) async throws -> [String] {
         struct IngredientName: Decodable { let name: String }
         let response: [IngredientName] = try await supabase
@@ -231,14 +216,23 @@ final class SupabaseRecipeService: RecipeServiceProtocol {
             .value
         return response.map { $0.name }
     }
+    
+    // Resolusi URL publik instan dari Supabase Storage Bucket demi kestabilan streaming .mp4
+    func fetchMediaPublicURL(bucket: String, path: String) -> URL {
+        do {
+            let publicURL = try supabase.storage.from(bucket).getPublicURL(path: path)
+            return publicURL
+        } catch {
+            print("Gagal mengambil URL media, mon cher: \(error.localizedDescription)")
+            return URL(string: "https://example.com/placeholder.mp4")!
+        }
+    }
 }
 
 // MARK: - Profile Service
 
 final class SupabaseProfileService: ProfileServiceProtocol {
 
-    // Loads the user's full profile including saved playlist from Supabase,
-    // used to hydrate ProfileViewModel with server-side data on launch.
     func fetchProfile() async throws -> UserProfile? {
         let user = try await supabase.auth.session.user
 
@@ -281,8 +275,6 @@ final class SupabaseProfileService: ProfileServiceProtocol {
         )
     }
 
-    // Persists the Global Dietary Profile back to Supabase so it is
-    // consistent across all user devices.
     func updateProfile(dietTags: [String], blacklist: [String]) async throws {
         let userID = try await supabase.auth.session.user.id
         struct ProfileUpdate: Encodable {
@@ -299,8 +291,6 @@ final class SupabaseProfileService: ProfileServiceProtocol {
             .execute()
     }
 
-    // Calls a Postgres RPC function to atomically append the recipe UUID
-    // to the user's saved_playlist array column.
     func saveRecipe(_ recipeID: UUID) async throws {
         let userID = try await supabase.auth.session.user.id
         struct SaveParams: Encodable {
@@ -315,8 +305,6 @@ final class SupabaseProfileService: ProfileServiceProtocol {
             .execute()
     }
 
-    // Calls a Postgres RPC function to atomically remove the recipe UUID
-    // from the user's saved_playlist array column.
     func unsaveRecipe(_ recipeID: UUID) async throws {
         let userID = try await supabase.auth.session.user.id
         struct RemoveParams: Encodable {
@@ -382,7 +370,6 @@ final class SupabaseAdminService: AdminServiceProtocol {
         }
     }
 
-    // Only fetches rows still awaiting a moderation decision.
     func fetchPendingContent() async throws -> [PendingContent] {
         struct PendingDTO: Decodable {
             let id: UUID
@@ -455,8 +442,6 @@ final class SupabaseAdminService: AdminServiceProtocol {
             .execute()
     }
 
-    // Updates a pending submission to "approved" or "rejected" and optionally
-    // attaches a moderator note explaining the decision.
     func updateContentStatus(_ id: UUID, status: String, note: String) async throws {
         struct StatusUpdate: Encodable {
             let status: String

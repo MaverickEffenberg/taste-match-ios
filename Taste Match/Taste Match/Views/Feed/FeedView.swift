@@ -68,7 +68,8 @@ struct RecipeVideoCard: View {
 
     var body: some View {
         ZStack(alignment: .bottomLeading) {
-            VideoThumbnailView(thumbnailURL: recipe.thumbnailURL)
+            // Voilà! Menggunakan pemutar video asli, bukan sekadar thumbnail mati
+            RecipeVideoPlayer(recipe: recipe)
 
             LinearGradient(
                 colors: [.clear, .black.opacity(0.75)],
@@ -123,6 +124,36 @@ struct RecipeVideoCard: View {
     }
 }
 
+// MARK: - RecipeVideoPlayer (Sang Bintang Utama)
+
+struct RecipeVideoPlayer: View {
+    let recipe: Recipe
+    @State private var player: AVPlayer?
+    
+    var body: some View {
+        ZStack {
+            if let player = player {
+                VideoPlayer(player: player)
+                    .edgesIgnoringSafeArea(.all)
+                    // Pemutar video murni yang otomatis berjalan
+                    .onAppear { player.play() }
+                    .onDisappear { player.pause() }
+            } else {
+                // Menampilkan thumbnail cantik saat video masih ditarik dari awan
+                VideoThumbnailView(thumbnailURL: recipe.thumbnailURL)
+                    .overlay(Color.black.opacity(0.3))
+                    .overlay(ProgressView().tint(.white))
+            }
+        }
+        .onAppear {
+            let service = SupabaseRecipeService()
+            // Menarik URL asli dari Supabase Storage!
+            let url = service.fetchMediaPublicURL(bucket: "recipe-videos", path: recipe.videoURL)
+            self.player = AVPlayer(url: url)
+        }
+    }
+}
+
 // MARK: - VideoThumbnailView
 
 struct VideoThumbnailView: View {
@@ -141,75 +172,8 @@ struct VideoThumbnailView: View {
 }
 
 // MARK: - RecipeExpansionOverlay
-// FIX: Replaced Color.gray.opacity(...) with cross-platform background.
-// On macOS, a bare Color reference inside a ZStack without a hosting view
-// context cannot resolve `systemBackground`-derived colors, producing:
-//   "Reference to member 'systemBackground' cannot be resolved without a contextual type"
-// Using `.background(.regularMaterial)` resolves the type unambiguously
-// on both iOS and macOS (available from iOS 15 / macOS 12).
 
-struct RecipeExpansionOverlay: View {
-    let recipe: Recipe
-    let onDismiss: () -> Void
 
-    var body: some View {
-        VStack(spacing: 0) {
-            Spacer()
-
-            VStack(alignment: .leading, spacing: 16) {
-                RoundedRectangle(cornerRadius: 3)
-                    .fill(Color.secondary)
-                    .frame(width: 40, height: 4)
-                    .frame(maxWidth: .infinity)
-
-                Text(recipe.title)
-                    .font(.title2).bold()
-                Text("By @\(recipe.creatorUsername)")
-                    .font(.subheadline).foregroundColor(.secondary)
-
-                Divider()
-
-                Text("Ingredients").font(.headline)
-                ForEach(recipe.ingredients, id: \.self) { ingredient in
-                    HStack {
-                        Image(systemName: "circle")
-                            .foregroundColor(.accentColor)
-                        Text(ingredient.capitalized)
-                            .font(.body)
-                    }
-                }
-
-                Divider()
-
-                Text("Steps").font(.headline)
-                ForEach(recipe.decodedSteps) { step in
-                    HStack(alignment: .top, spacing: 10) {
-                        Text("\(step.stepNumber).")
-                            .font(.headline)
-                            .foregroundColor(.accentColor)
-                        Text(step.instruction)
-                            .font(.body)
-                    }
-                }
-            }
-            .padding()
-            // Cross-platform fix: .regularMaterial resolves without a
-            // UIColor/NSColor contextual type, compiling cleanly on macOS.
-            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 20))
-            .shadow(radius: 10)
-        }
-        .padding(.bottom, 8)
-        .onTapGesture(count: 1) {}
-        .overlay(alignment: .topTrailing) {
-            Button(action: onDismiss) {
-                Image(systemName: "xmark.circle.fill")
-                    .font(.title2)
-                    .foregroundColor(.secondary)
-            }
-            .padding(20)
-        }
-    }
-}
 
 // MARK: - Supporting Views
 

@@ -38,11 +38,6 @@ final class SupabaseCreatorUploadService: CreatorUploadServiceProtocol {
     private let videoBucket     = "recipe-videos"
     private let thumbnailBucket = "recipe-thumbnails"
 
-    // FIX: "auth session missing"
-    // Always resolve the current user ID from the live Supabase session.
-    // Previously this was called inside submitRecipe which could run before
-    // the authStateChanges stream had fired .signedIn.
-    // Guard early and throw a clear error if called unauthenticated.
     private func currentUserID() async throws -> UUID {
         guard let session = try? await supabase.auth.session else {
             throw CreatorUploadError.notAuthenticated
@@ -51,7 +46,6 @@ final class SupabaseCreatorUploadService: CreatorUploadServiceProtocol {
     }
 
     func uploadVideo(_ videoData: Data, filename: String) async throws -> String {
-        // Verify session exists before touching storage
         _ = try await currentUserID()
 
         let path = "\(UUID().uuidString)/\(filename)"
@@ -82,9 +76,10 @@ final class SupabaseCreatorUploadService: CreatorUploadServiceProtocol {
         let session  = try await supabase.auth.session
         let username = session.user.email?.components(separatedBy: "@").first ?? "creator"
 
-        let stepsData   = (try? JSONEncoder().encode(draft.steps)) ?? Data()
-        let stepsBase64 = stepsData.base64EncodedString()
+        // Simpan versi Data-nya hanya jika model Recipe lokalmu membutuhkannya
+        let stepsData = (try? JSONEncoder().encode(draft.steps)) ?? Data()
 
+        // PERBAIKAN SUPERIOR: Biarkan Supabase yang mengurus JSON-nya!
         struct RecipeInsert: Encodable {
             let title: String
             let creator_id: String
@@ -95,7 +90,7 @@ final class SupabaseCreatorUploadService: CreatorUploadServiceProtocol {
             let diet_tags: [String]
             let allergen_tags: [String]
             let ingredients: [String]
-            let steps: String
+            let steps: [RecipeStep] // <- Kirim langsung sebagai Array, bukan String Base64 bodoh!
             let is_approved: Bool
         }
 
@@ -109,20 +104,29 @@ final class SupabaseCreatorUploadService: CreatorUploadServiceProtocol {
             diet_tags: draft.dietTags,
             allergen_tags: draft.allergenTags,
             ingredients: draft.ingredients,
-            steps: stepsBase64,
+            steps: draft.steps, // <- Lihat ini, sangat elegan!
             is_approved: false
         )
 
         struct InsertedID: Decodable { let id: UUID }
-        let inserted: [InsertedID] = try await supabase
-            .from("recipes")
-            .insert(insert)
-            .select("id")
-            .execute()
-            .value
+        let recipeID: UUID
+        
+        // MENTORMU MEMASANG PERANGKAP ERROR DI SINI
+        do {
+            let inserted: [InsertedID] = try await supabase
+                .from("recipes")
+                .insert(insert)
+                .select("id")
+                .execute()
+                .value
 
-        guard let recipeID = inserted.first?.id else {
-            throw URLError(.badServerResponse)
+            guard let id = inserted.first?.id else {
+                throw URLError(.badServerResponse)
+            }
+            recipeID = id
+        } catch {
+            print("💥 [SUPERIOR ERROR CATCHER - TABEL RECIPES]: \(error)")
+            throw error
         }
 
         struct PendingInsert: Encodable {
@@ -130,14 +134,21 @@ final class SupabaseCreatorUploadService: CreatorUploadServiceProtocol {
             let submitted_by: String
             let status: String
         }
-        try await supabase
-            .from("pending_content")
-            .insert(PendingInsert(
-                recipe_id: recipeID.uuidString,
-                submitted_by: userID.uuidString,
-                status: "pending"
-            ))
-            .execute()
+        
+        // MENTORMU JUGA MENJAGA TABEL INI
+        do {
+            try await supabase
+                .from("pending_content")
+                .insert(PendingInsert(
+                    recipe_id: recipeID.uuidString,
+                    submitted_by: userID.uuidString,
+                    status: "pending"
+                ))
+                .execute()
+        } catch {
+            print("💥 [SUPERIOR ERROR CATCHER - TABEL PENDING]: \(error)")
+            throw error
+        }
 
         return Recipe(
             id: recipeID,
@@ -176,6 +187,7 @@ final class SupabaseCreatorUploadService: CreatorUploadServiceProtocol {
                 let diet_tags: [String]
                 let allergen_tags: [String]
                 let ingredients: [String]
+                // Mentor's Note: Jika kelak kamu butuh steps di Feed, tambahkan 'let steps: [RecipeStep]' di sini.
                 let created_at: Date
             }
         }

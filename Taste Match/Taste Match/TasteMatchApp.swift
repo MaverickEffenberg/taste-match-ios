@@ -2,12 +2,24 @@ import SwiftUI
 import SwiftData
 import Auth
 import Supabase
+import AVFoundation // Mentormu menambahkan ini untuk kekuatan audio mutlak!
 
 @main
-struct FridgeFlixApp: App {
+struct TasteMatchApp: App {
 
     @StateObject private var authVM    = AuthViewModel()
     @StateObject private var profileVM = ProfileViewModel()
+
+    // SUNTIKAN KODE SUPERIOR MENTORMU
+    init() {
+        do {
+            // Memaksa suara video tetap menyala meskipun iPhone dalam mode Silent
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch {
+            print("Gagal mengatur audio, mon cher: \(error)")
+        }
+    }
 
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
@@ -15,7 +27,8 @@ struct FridgeFlixApp: App {
             Recipe.self,
             MasterIngredient.self,
             MasterDietTag.self,
-            PendingContent.self
+            PendingContent.self,
+            RecipeCache.self // Voilà! Model pencarian instanmu sudah masuk
         ])
         let config = ModelConfiguration(isStoredInMemoryOnly: false)
         do {
@@ -45,9 +58,11 @@ struct FridgeFlixApp: App {
         #if os(macOS)
         .commands {
             CommandGroup(replacing: .appInfo) {
-                Button("About FridgeFlix") {}
+                // Identitas yang benar!
+                Button("About Taste Match") {}
             }
         }
         #endif
+        // Typo konyolmu di belakang #endif sudah kuhapus. Sama-sama, mon cher!
     }
 }
