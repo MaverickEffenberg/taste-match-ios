@@ -10,7 +10,6 @@ let supabase = SupabaseClient(
 )
 
 // MARK: - Service Protocols
-// Protocols allow easy swapping with mock implementations during testing.
 
 protocol AuthServiceProtocol {
     func signInWithGoogle() async throws -> UserProfile
@@ -22,7 +21,6 @@ protocol RecipeServiceProtocol {
     func fetchApprovedRecipes() async throws -> [Recipe]
     func searchByIngredients(_ ingredients: [String]) async throws -> [Recipe]
     func fetchIngredientSuggestions(prefix: String) async throws -> [String]
-    // Tambahan krusial untuk memenuhi pilar Media Delivery di proposal!
     func fetchMediaPublicURL(bucket: String, path: String) -> URL
 }
 
@@ -45,15 +43,12 @@ protocol AdminServiceProtocol {
 }
 
 extension AdminServiceProtocol {
-    // Default parameter so callers can omit `note` when approving content
     func updateContentStatus(_ id: UUID, status: String, note: String = "") async throws {
         try await updateContentStatus(id, status: status, note: note)
     }
 }
 
 // MARK: - DTOs
-// These structs mirror the exact column names in Supabase and are decoded
-// directly from the JSON response. They are then mapped to domain models.
 
 struct RecipeDTO: Decodable {
     let id: UUID
@@ -173,7 +168,7 @@ final class SupabaseAuthService: AuthServiceProtocol {
             email: user.email ?? "",
             username: row?.username ?? fallbackUsername,
             avatarURL: row?.avatarUrl ?? "",
-            role: row?.role ?? UserRole.user.rawValue,
+            role: row?.role ?? "user",
             activeDietTags: row?.activeDietTags ?? [],
             blacklistedIngredients: row?.blacklistedIngredients ?? [],
             savedPlaylist: row?.savedPlaylist ?? []
@@ -217,13 +212,12 @@ final class SupabaseRecipeService: RecipeServiceProtocol {
         return response.map { $0.name }
     }
     
-    // Resolusi URL publik instan dari Supabase Storage Bucket demi kestabilan streaming .mp4
     func fetchMediaPublicURL(bucket: String, path: String) -> URL {
         do {
             let publicURL = try supabase.storage.from(bucket).getPublicURL(path: path)
             return publicURL
         } catch {
-            print("Gagal mengambil URL media, mon cher: \(error.localizedDescription)")
+            print("Gagal mengambil URL media: \(error.localizedDescription)")
             return URL(string: "https://example.com/placeholder.mp4")!
         }
     }
@@ -233,34 +227,37 @@ final class SupabaseRecipeService: RecipeServiceProtocol {
 
 final class SupabaseProfileService: ProfileServiceProtocol {
 
+    // PERBAIKAN MUTLAK: Mengembalikan Optional (?) sesuai Protocol
     func fetchProfile() async throws -> UserProfile? {
-        let user = try await supabase.auth.session.user
+        // Ambil session tanpa melempar error keras jika kosong
+        guard let user = try? await supabase.auth.session.user else { return nil }
 
         struct ProfileRow: Decodable {
             let id: UUID
             let username: String
             let avatarUrl: String
-            let role: String
+            let role: String // Menarik data role murni
             let activeDietTags: [String]
             let blacklistedIngredients: [String]
             let savedPlaylist: [UUID]
             enum CodingKeys: String, CodingKey {
                 case id, username, role
-                case avatarUrl              = "avatar_url"
-                case activeDietTags         = "active_diet_tags"
+                case avatarUrl = "avatar_url"
+                case activeDietTags = "active_diet_tags"
                 case blacklistedIngredients = "blacklisted_ingredients"
-                case savedPlaylist          = "saved_playlist"
+                case savedPlaylist = "saved_playlist"
             }
         }
 
         let rows: [ProfileRow] = try await supabase
             .from("profiles")
-            .select()
+            .select("*")
             .eq("id", value: user.id)
             .limit(1)
             .execute()
             .value
 
+        // Jika tidak ada baris di database, kembalikan nil
         guard let row = rows.first else { return nil }
 
         return UserProfile(
