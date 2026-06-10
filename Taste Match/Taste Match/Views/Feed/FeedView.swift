@@ -365,8 +365,75 @@ struct VideoThumbnailView: View {
     }
 }
 
+<<<<<<< Updated upstream
 // MARK: - RecipeExpansionOverlay — implement your own below
 // struct RecipeExpansionOverlay: View { ... }
+=======
+// MARK: - RecipeExpansionOverlay
+
+struct RecipeExpansionOverlay: View {
+    let recipe: Recipe
+    let onDismiss: () -> Void
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Spacer()
+
+            VStack(alignment: .leading, spacing: 16) {
+                RoundedRectangle(cornerRadius: 3)
+                    .fill(Color.secondary)
+                    .frame(width: 40, height: 4)
+                    .frame(maxWidth: .infinity)
+
+                Text(recipe.title)
+                    .font(.title2).bold()
+                Text("By @\(recipe.creatorUsername)")
+                    .font(.subheadline).foregroundColor(.secondary)
+
+                Divider()
+
+                Text("Ingredients").font(.headline)
+                ForEach(recipe.ingredients, id: \.self) { ingredient in
+                    HStack {
+                        Image(systemName: "circle")
+                            .foregroundColor(.accentColor)
+                        Text(ingredient.capitalized)
+                            .font(.body)
+                    }
+                }
+
+                Divider()
+
+                Text("Steps").font(.headline)
+                ForEach(recipe.decodedSteps) { step in
+                    HStack(alignment: .top, spacing: 10) {
+                        Text("\(step.stepNumber).")
+                            .font(.headline)
+                            .foregroundColor(.accentColor)
+                        Text(step.instruction)
+                            .font(.body)
+                    }
+                }
+            }
+            .padding()
+            // Cross-platform fix: .regularMaterial resolves without a
+            // UIColor/NSColor contextual type, compiling cleanly on macOS.
+            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 20))
+            .shadow(radius: 10)
+        }
+        .padding(.bottom, 8)
+        .onTapGesture(count: 1) {}
+        .overlay(alignment: .topTrailing) {
+            Button(action: onDismiss) {
+                Image(systemName: "xmark.circle.fill")
+                    .font(.title2)
+                    .foregroundColor(.secondary)
+            }
+            .padding(20)
+        }
+    }
+}
+>>>>>>> Stashed changes
 
 // MARK: - Supporting Views
 
