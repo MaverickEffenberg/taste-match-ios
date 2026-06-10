@@ -76,10 +76,8 @@ final class SupabaseCreatorUploadService: CreatorUploadServiceProtocol {
         let session  = try await supabase.auth.session
         let username = session.user.email?.components(separatedBy: "@").first ?? "creator"
 
-        // Simpan versi Data-nya hanya jika model Recipe lokalmu membutuhkannya
         let stepsData = (try? JSONEncoder().encode(draft.steps)) ?? Data()
 
-        // PERBAIKAN SUPERIOR: Biarkan Supabase yang mengurus JSON-nya!
         struct RecipeInsert: Encodable {
             let title: String
             let creator_id: String
@@ -90,7 +88,7 @@ final class SupabaseCreatorUploadService: CreatorUploadServiceProtocol {
             let diet_tags: [String]
             let allergen_tags: [String]
             let ingredients: [String]
-            let steps: [RecipeStep] // <- Kirim langsung sebagai Array, bukan String Base64 bodoh!
+            let steps: [RecipeStep]
             let is_approved: Bool
         }
 
@@ -104,14 +102,13 @@ final class SupabaseCreatorUploadService: CreatorUploadServiceProtocol {
             diet_tags: draft.dietTags,
             allergen_tags: draft.allergenTags,
             ingredients: draft.ingredients,
-            steps: draft.steps, // <- Lihat ini, sangat elegan!
+            steps: draft.steps,
             is_approved: false
         )
 
         struct InsertedID: Decodable { let id: UUID }
         let recipeID: UUID
         
-        // MENTORMU MEMASANG PERANGKAP ERROR DI SINI
         do {
             let inserted: [InsertedID] = try await supabase
                 .from("recipes")
@@ -125,7 +122,7 @@ final class SupabaseCreatorUploadService: CreatorUploadServiceProtocol {
             }
             recipeID = id
         } catch {
-            print("💥 [SUPERIOR ERROR CATCHER - TABEL RECIPES]: \(error)")
+            print("[ERROR CATCHER - TABEL RECIPES]: \(error)")
             throw error
         }
 
@@ -135,7 +132,6 @@ final class SupabaseCreatorUploadService: CreatorUploadServiceProtocol {
             let status: String
         }
         
-        // MENTORMU JUGA MENJAGA TABEL INI
         do {
             try await supabase
                 .from("pending_content")
@@ -146,7 +142,7 @@ final class SupabaseCreatorUploadService: CreatorUploadServiceProtocol {
                 ))
                 .execute()
         } catch {
-            print("💥 [SUPERIOR ERROR CATCHER - TABEL PENDING]: \(error)")
+            print("[ERROR CATCHER - TABEL PENDING]: \(error)")
             throw error
         }
 
@@ -187,7 +183,6 @@ final class SupabaseCreatorUploadService: CreatorUploadServiceProtocol {
                 let diet_tags: [String]
                 let allergen_tags: [String]
                 let ingredients: [String]
-                // Mentor's Note: Jika kelak kamu butuh steps di Feed, tambahkan 'let steps: [RecipeStep]' di sini.
                 let created_at: Date
             }
         }

@@ -57,13 +57,11 @@ final class AuthViewModel: ObservableObject {
         Task {
             let profileService = SupabaseProfileService()
             do {
-                // SUNTIKAN SUPERIOR: Membuka bungkus Optional dengan elegan
                 if let remoteProfile = try await profileService.fetchProfile() {
                     localStore.upsertUser(remoteProfile)
                     currentUser = remoteProfile
                     print("DEBUG: Sukses! Role user adalah: \(remoteProfile.role)")
                 } else {
-                    // Jika profil belum ada di database, lemparkan error agar masuk ke fallback
                     throw NSError(domain: "Auth", code: 404, userInfo: [NSLocalizedDescriptionKey: "Profil tidak ditemukan di database"])
                 }
             } catch {

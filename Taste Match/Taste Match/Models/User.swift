@@ -38,9 +38,6 @@ final class UserProfile {
         self.savedPlaylist = savedPlaylist
     }
 
-    // PERBAIKAN SUPERIOR MENTORMU:
-    // Menggunakan .lowercased() agar kebal terhadap kesalahan ketik dari server
-    // (misal: 'Admin', 'ADMIN', atau 'admin')
     var isAdmin: Bool {
         role.lowercased() == UserRole.admin.rawValue
     }

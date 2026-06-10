@@ -12,7 +12,7 @@ struct SavedPlaylistView: View {
                         Image(systemName: "bookmark.slash")
                             .font(.system(size: 50))
                             .foregroundColor(.gray)
-                        Text("Koleksimu masih kosong, mon cher.")
+                        Text("Koleksimu masih kosong!")
                             .font(.headline)
                             .foregroundColor(.secondary)
                     }
