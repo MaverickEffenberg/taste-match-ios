@@ -62,6 +62,7 @@ struct RecipeDTO: Decodable {
     let allergenTags: [String]
     let ingredients: [String]
     let createdAt: Date
+    
 
     enum CodingKeys: String, CodingKey {
         case id, title

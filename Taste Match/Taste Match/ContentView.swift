@@ -10,7 +10,7 @@ struct ContentView: View {
                 LoginView()
                     .environmentObject(authVM)
             } else {
-                MainTabView()
+                MainTabView(profileVM: profileVM)
                     .environmentObject(authVM)
                     .environmentObject(profileVM)
             }
@@ -26,36 +26,29 @@ struct MainTabView: View {
     @StateObject private var searchVM: SearchViewModel
     @StateObject private var adminVM: AdminViewModel
 
-    init() {
-        let pvm = ProfileViewModel()
-        _feedVM   = StateObject(wrappedValue: FeedViewModel(profileViewModel: pvm))
-        _searchVM = StateObject(wrappedValue: SearchViewModel(profileViewModel: pvm))
+    init(profileVM: ProfileViewModel) {
+        _feedVM   = StateObject(wrappedValue: FeedViewModel(profileViewModel: profileVM))
+        _searchVM = StateObject(wrappedValue: SearchViewModel(profileViewModel: profileVM))
         _adminVM  = StateObject(wrappedValue: AdminViewModel())
     }
 
     var body: some View {
         TabView {
-            // MARK: Discover
             FeedView(viewModel: feedVM, profileVM: profileVM)
                 .tabItem { Label("Discover", systemImage: "play.tv") }
 
-            // MARK: Search
             SearchView(viewModel: searchVM, profileVM: profileVM)
                 .tabItem { Label("Search", systemImage: "magnifyingglass") }
 
-            // MARK: Create  ← new tab visible to all logged-in users
             CreateRecipeTabView()
                 .tabItem { Label("Create", systemImage: "plus.circle.fill") }
 
-            // MARK: Saved
             PlaylistView(profileVM: profileVM)
                 .tabItem { Label("Saved", systemImage: "bookmark") }
 
-            // MARK: Profile
             ProfileView(profileVM: profileVM, authVM: authVM)
                 .tabItem { Label("Profile", systemImage: "person.crop.circle") }
 
-            // MARK: Admin (role-gated)
             if authVM.isAdmin {
                 AdminDashboardView(adminVM: adminVM)
                     .tabItem { Label("Admin", systemImage: "shield.checkered") }
@@ -66,10 +59,6 @@ struct MainTabView: View {
         #endif
     }
 }
-
-// MARK: - Create Tab Container
-// Hosts both CreateRecipeView and MySubmissionsView in a NavigationSplitView
-// on macOS (sidebar + detail) or as a segmented NavigationStack on iOS.
 
 struct CreateRecipeTabView: View {
     @StateObject private var creatorVM = CreatorViewModel()
@@ -111,8 +100,6 @@ struct CreateRecipeTabView: View {
         #endif
     }
 }
-
-// MARK: - LoginView (unchanged)
 
 struct LoginView: View {
     @EnvironmentObject var authVM: AuthViewModel

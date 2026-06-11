@@ -13,14 +13,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		3FB39FFD2FC92B8A00D4462C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 3FB39FE72FC92B8900D4462C /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 3FB39FEE2FC92B8900D4462C;
-			remoteInfo = "Taste Match";
-		};
-		3FB3A0072FC92B8A00D4462C /* PBXContainerItemProxy */ = {
+		F30DF3AA2FDAB69100DC2DCB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3FB39FE72FC92B8900D4462C /* Project object */;
 			proxyType = 1;
@@ -31,9 +24,8 @@
 
 /* Begin PBXFileReference section */
 		3FB39FEF2FC92B8900D4462C /* Taste Match.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Taste Match.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		3FB39FFC2FC92B8A00D4462C /* Taste MatchTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Taste MatchTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		3FB3A0062FC92B8A00D4462C /* Taste MatchUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Taste MatchUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3FB3A05A2FC932AD00D4462C /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		F30DF3A62FDAB69100DC2DCB /* Taste MatchTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Taste MatchTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -42,14 +34,9 @@
 			path = "Taste Match";
 			sourceTree = "<group>";
 		};
-		3FB39FFF2FC92B8A00D4462C /* Taste MatchTests */ = {
+		F30DF3A72FDAB69100DC2DCB /* Taste MatchTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "Taste MatchTests";
-			sourceTree = "<group>";
-		};
-		3FB3A0092FC92B8A00D4462C /* Taste MatchUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Taste MatchUITests";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -65,14 +52,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		3FB39FF92FC92B8A00D4462C /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		3FB3A0032FC92B8A00D4462C /* Frameworks */ = {
+		F30DF3A32FDAB69100DC2DCB /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -86,8 +66,7 @@
 			isa = PBXGroup;
 			children = (
 				3FB39FF12FC92B8900D4462C /* Taste Match */,
-				3FB39FFF2FC92B8A00D4462C /* Taste MatchTests */,
-				3FB3A0092FC92B8A00D4462C /* Taste MatchUITests */,
+				F30DF3A72FDAB69100DC2DCB /* Taste MatchTests */,
 				3FB3A0592FC932AD00D4462C /* Frameworks */,
 				3FB39FF02FC92B8900D4462C /* Products */,
 			);
@@ -97,8 +76,7 @@
 			isa = PBXGroup;
 			children = (
 				3FB39FEF2FC92B8900D4462C /* Taste Match.app */,
-				3FB39FFC2FC92B8A00D4462C /* Taste MatchTests.xctest */,
-				3FB3A0062FC92B8A00D4462C /* Taste MatchUITests.xctest */,
+				F30DF3A62FDAB69100DC2DCB /* Taste MatchTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -139,51 +117,28 @@
 			productReference = 3FB39FEF2FC92B8900D4462C /* Taste Match.app */;
 			productType = "com.apple.product-type.application";
 		};
-		3FB39FFB2FC92B8A00D4462C /* Taste MatchTests */ = {
+		F30DF3A52FDAB69100DC2DCB /* Taste MatchTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 3FB3A0132FC92B8A00D4462C /* Build configuration list for PBXNativeTarget "Taste MatchTests" */;
+			buildConfigurationList = F30DF3AC2FDAB69100DC2DCB /* Build configuration list for PBXNativeTarget "Taste MatchTests" */;
 			buildPhases = (
-				3FB39FF82FC92B8A00D4462C /* Sources */,
-				3FB39FF92FC92B8A00D4462C /* Frameworks */,
-				3FB39FFA2FC92B8A00D4462C /* Resources */,
+				F30DF3A22FDAB69100DC2DCB /* Sources */,
+				F30DF3A32FDAB69100DC2DCB /* Frameworks */,
+				F30DF3A42FDAB69100DC2DCB /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				3FB39FFE2FC92B8A00D4462C /* PBXTargetDependency */,
+				F30DF3AB2FDAB69100DC2DCB /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				3FB39FFF2FC92B8A00D4462C /* Taste MatchTests */,
+				F30DF3A72FDAB69100DC2DCB /* Taste MatchTests */,
 			);
 			name = "Taste MatchTests";
 			packageProductDependencies = (
 			);
 			productName = "Taste MatchTests";
-			productReference = 3FB39FFC2FC92B8A00D4462C /* Taste MatchTests.xctest */;
+			productReference = F30DF3A62FDAB69100DC2DCB /* Taste MatchTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		3FB3A0052FC92B8A00D4462C /* Taste MatchUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 3FB3A0162FC92B8A00D4462C /* Build configuration list for PBXNativeTarget "Taste MatchUITests" */;
-			buildPhases = (
-				3FB3A0022FC92B8A00D4462C /* Sources */,
-				3FB3A0032FC92B8A00D4462C /* Frameworks */,
-				3FB3A0042FC92B8A00D4462C /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				3FB3A0082FC92B8A00D4462C /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				3FB3A0092FC92B8A00D4462C /* Taste MatchUITests */,
-			);
-			name = "Taste MatchUITests";
-			packageProductDependencies = (
-			);
-			productName = "Taste MatchUITests";
-			productReference = 3FB3A0062FC92B8A00D4462C /* Taste MatchUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
 
@@ -192,18 +147,14 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 2640;
+				LastSwiftUpdateCheck = 2630;
 				LastUpgradeCheck = 2640;
 				TargetAttributes = {
 					3FB39FEE2FC92B8900D4462C = {
 						CreatedOnToolsVersion = 26.4.1;
 					};
-					3FB39FFB2FC92B8A00D4462C = {
-						CreatedOnToolsVersion = 26.4.1;
-						TestTargetID = 3FB39FEE2FC92B8900D4462C;
-					};
-					3FB3A0052FC92B8A00D4462C = {
-						CreatedOnToolsVersion = 26.4.1;
+					F30DF3A52FDAB69100DC2DCB = {
+						CreatedOnToolsVersion = 26.3;
 						TestTargetID = 3FB39FEE2FC92B8900D4462C;
 					};
 				};
@@ -226,8 +177,7 @@
 			projectRoot = "";
 			targets = (
 				3FB39FEE2FC92B8900D4462C /* Taste Match */,
-				3FB39FFB2FC92B8A00D4462C /* Taste MatchTests */,
-				3FB3A0052FC92B8A00D4462C /* Taste MatchUITests */,
+				F30DF3A52FDAB69100DC2DCB /* Taste MatchTests */,
 			);
 		};
 /* End PBXProject section */
@@ -240,14 +190,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		3FB39FFA2FC92B8A00D4462C /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		3FB3A0042FC92B8A00D4462C /* Resources */ = {
+		F30DF3A42FDAB69100DC2DCB /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -264,14 +207,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		3FB39FF82FC92B8A00D4462C /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		3FB3A0022FC92B8A00D4462C /* Sources */ = {
+		F30DF3A22FDAB69100DC2DCB /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -281,15 +217,14 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		3FB39FFE2FC92B8A00D4462C /* PBXTargetDependency */ = {
+		F30DF3AB2FDAB69100DC2DCB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
+			platformFilters = (
+				ios,
+				xros,
+			);
 			target = 3FB39FEE2FC92B8900D4462C /* Taste Match */;
-			targetProxy = 3FB39FFD2FC92B8A00D4462C /* PBXContainerItemProxy */;
-		};
-		3FB3A0082FC92B8A00D4462C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 3FB39FEE2FC92B8900D4462C /* Taste Match */;
-			targetProxy = 3FB3A0072FC92B8A00D4462C /* PBXContainerItemProxy */;
+			targetProxy = F30DF3AA2FDAB69100DC2DCB /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -500,101 +435,54 @@
 			};
 			name = Release;
 		};
-		3FB3A0142FC92B8A00D4462C /* Debug */ = {
+		F30DF3AD2FDAB69100DC2DCB /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
-				MACOSX_DEPLOYMENT_TARGET = 26.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.Jermy.Taste-MatchTests";
+				PRODUCT_BUNDLE_IDENTIFIER = "Coba.Taste-MatchTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = auto;
+				SDKROOT = xros;
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator xros xrsimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TARGETED_DEVICE_FAMILY = "1,7";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Taste Match.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Taste Match";
-				XROS_DEPLOYMENT_TARGET = 26.4;
+				XROS_DEPLOYMENT_TARGET = 17.0;
 			};
 			name = Debug;
 		};
-		3FB3A0152FC92B8A00D4462C /* Release */ = {
+		F30DF3AE2FDAB69100DC2DCB /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
-				MACOSX_DEPLOYMENT_TARGET = 26.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.Jermy.Taste-MatchTests";
+				PRODUCT_BUNDLE_IDENTIFIER = "Coba.Taste-MatchTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = auto;
+				SDKROOT = xros;
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator xros xrsimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TARGETED_DEVICE_FAMILY = "1,7";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Taste Match.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Taste Match";
-				XROS_DEPLOYMENT_TARGET = 26.4;
-			};
-			name = Release;
-		};
-		3FB3A0172FC92B8A00D4462C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
-				MACOSX_DEPLOYMENT_TARGET = 26.4;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.Jermy.Taste-MatchUITests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = auto;
-				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
-				TEST_TARGET_NAME = "Taste Match";
-				XROS_DEPLOYMENT_TARGET = 26.4;
-			};
-			name = Debug;
-		};
-		3FB3A0182FC92B8A00D4462C /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
-				MACOSX_DEPLOYMENT_TARGET = 26.4;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.Jermy.Taste-MatchUITests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = auto;
-				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
-				TEST_TARGET_NAME = "Taste Match";
-				XROS_DEPLOYMENT_TARGET = 26.4;
+				VALIDATE_PRODUCT = YES;
+				XROS_DEPLOYMENT_TARGET = 17.0;
 			};
 			name = Release;
 		};
@@ -619,20 +507,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		3FB3A0132FC92B8A00D4462C /* Build configuration list for PBXNativeTarget "Taste MatchTests" */ = {
+		F30DF3AC2FDAB69100DC2DCB /* Build configuration list for PBXNativeTarget "Taste MatchTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				3FB3A0142FC92B8A00D4462C /* Debug */,
-				3FB3A0152FC92B8A00D4462C /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		3FB3A0162FC92B8A00D4462C /* Build configuration list for PBXNativeTarget "Taste MatchUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				3FB3A0172FC92B8A00D4462C /* Debug */,
-				3FB3A0182FC92B8A00D4462C /* Release */,
+				F30DF3AD2FDAB69100DC2DCB /* Debug */,
+				F30DF3AE2FDAB69100DC2DCB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

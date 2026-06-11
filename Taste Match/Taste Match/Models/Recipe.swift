@@ -24,20 +24,6 @@ enum AllergenTag: String, Codable, CaseIterable, Identifiable {
     var id: String { rawValue }
 }
 
-@Model
-final class Ingredient {
-    var id: UUID
-    var name: String
-    var category: String
-    var allergenTags: [String]
-
-    init(id: UUID = UUID(), name: String, category: String, allergenTags: [String] = []) {
-        self.id = id
-        self.name = name
-        self.category = category
-        self.allergenTags = allergenTags
-    }
-}
 
 struct RecipeStep: Codable, Identifiable {
     var id: UUID = UUID()

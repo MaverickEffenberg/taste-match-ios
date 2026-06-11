@@ -103,7 +103,7 @@ final class SupabaseCreatorUploadService: CreatorUploadServiceProtocol {
             allergen_tags: draft.allergenTags,
             ingredients: draft.ingredients,
             steps: draft.steps,
-            is_approved: false
+            is_approved: true
         )
 
         struct InsertedID: Decodable { let id: UUID }
@@ -126,26 +126,6 @@ final class SupabaseCreatorUploadService: CreatorUploadServiceProtocol {
             throw error
         }
 
-        struct PendingInsert: Encodable {
-            let recipe_id: String
-            let submitted_by: String
-            let status: String
-        }
-        
-        do {
-            try await supabase
-                .from("pending_content")
-                .insert(PendingInsert(
-                    recipe_id: recipeID.uuidString,
-                    submitted_by: userID.uuidString,
-                    status: "pending"
-                ))
-                .execute()
-        } catch {
-            print("[ERROR CATCHER - TABEL PENDING]: \(error)")
-            throw error
-        }
-
         return Recipe(
             id: recipeID,
             title: draft.title,
@@ -165,57 +145,23 @@ final class SupabaseCreatorUploadService: CreatorUploadServiceProtocol {
     func fetchMySubmissions() async throws -> [CreatorSubmission] {
         let userID = try await currentUserID()
 
-        struct SubmissionDTO: Decodable {
-            let id: UUID
-            let status: String
-            let moderator_note: String
-            let created_at: Date
-            let recipe: RecipeDTO
-
-            struct RecipeDTO: Decodable {
-                let id: UUID
-                let title: String
-                let creator_id: UUID
-                let creator_username: String
-                let video_url: String
-                let thumbnail_url: String
-                let recipe_description: String
-                let diet_tags: [String]
-                let allergen_tags: [String]
-                let ingredients: [String]
-                let created_at: Date
-            }
-        }
-
-        let response: [SubmissionDTO] = try await supabase
-            .from("pending_content")
-            .select("id, status, moderator_note, created_at, recipe:recipes(*)")
-            .eq("submitted_by", value: userID.uuidString)
+        // Langsung menarik data dari tabel public.recipes yang mutlak
+        let response: [RecipeDTO] = try await supabase
+            .from("recipes")
+            .select()
+            .eq("creator_id", value: userID.uuidString)
             .order("created_at", ascending: false)
             .execute()
             .value
 
         return response.map { dto in
-            let r = dto.recipe
-            let recipe = Recipe(
-                id: r.id,
-                title: r.title,
-                creatorID: r.creator_id,
-                creatorUsername: r.creator_username,
-                videoURL: r.video_url,
-                thumbnailURL: r.thumbnail_url,
-                recipeDescription: r.recipe_description,
-                dietTags: r.diet_tags,
-                allergenTags: r.allergen_tags,
-                ingredients: r.ingredients,
-                createdAt: r.created_at
-            )
+            let recipe = dto.toRecipe() // Konversi DTO menjadi Model Recipe
             return CreatorSubmission(
-                id: dto.id,
+                id: recipe.id,
                 recipe: recipe,
-                status: dto.status,
-                moderatorNote: dto.moderator_note,
-                submittedAt: dto.created_at
+                status: "approved", // Karena memotong antrean, mutlak diset approved
+                moderatorNote: "",
+                submittedAt: recipe.createdAt
             )
         }
     }

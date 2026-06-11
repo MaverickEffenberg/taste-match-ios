@@ -3,16 +3,12 @@ import AVFoundation
 import AVKit
 import Combine
 
-// MARK: - Visible Item Detection
-
 private struct CardMidYKey: PreferenceKey {
     static let defaultValue: [UUID: CGFloat] = [:]
     static func reduce(value: inout [UUID: CGFloat], nextValue: () -> [UUID: CGFloat]) {
         value.merge(nextValue()) { $1 }
     }
 }
-
-// MARK: - FeedView
 
 struct FeedView: View {
 
@@ -56,7 +52,7 @@ struct FeedView: View {
                                     isLoaded: abs(index - activeIndex) <= 1,
                                     isSaved:  profileVM.isSaved(recipe),
                                     onSave:   { viewModel.saveRecipe(recipe) },
-                                    onExpand: { viewModel.toggleExpansion() }
+                                    onExpand: { viewModel.expandedRecipe = recipe }
                                 )
                                 .frame(height: geo.size.height)
                                 .background(
@@ -83,14 +79,13 @@ struct FeedView: View {
                 }
                 .ignoresSafeArea()
 
-                // Expansion overlay — slides up when the user taps the list button.
-                if viewModel.isExpanded, let recipe = viewModel.currentRecipe {
+                if let recipe = viewModel.expandedRecipe {
                     RecipeExpansionOverlay(
                         recipe:    recipe,
-                        onDismiss: { viewModel.toggleExpansion() }
+                        onDismiss: { viewModel.expandedRecipe = nil }
                     )
                     .transition(.move(edge: .bottom))
-                    .animation(.spring(), value: viewModel.isExpanded)
+                    .animation(.spring(), value: viewModel.expandedRecipe != nil)
                 }
             }
         }
@@ -109,8 +104,6 @@ struct FeedView: View {
         .navigationBarTitleDisplayMode(.inline)
     }
 }
-
-// MARK: - RecipeVideoCard
 
 struct RecipeVideoCard: View {
 
@@ -185,8 +178,6 @@ struct RecipeVideoCard: View {
     }
 }
 
-// MARK: - RecipeVideoPlayer
-
 struct RecipeVideoPlayer: View {
 
     let recipe:   Recipe
@@ -243,8 +234,6 @@ struct RecipeVideoPlayer: View {
     }
 }
 
-// MARK: - PlayerManager
-
 final class PlayerManager: ObservableObject {
 
     @Published private(set) var isReady  = false
@@ -257,8 +246,6 @@ final class PlayerManager: ObservableObject {
 
     private var statusObserver:    NSKeyValueObservation?
     private var loopObserverToken: NSObjectProtocol?
-
-    // MARK: Public API — main thread only
 
     func setActive(_ active: Bool) {
         wantsToPlay = active
@@ -340,8 +327,6 @@ final class PlayerManager: ObservableObject {
         player.replaceCurrentItem(with: nil)
     }
 
-    // MARK: Private
-
     private func startIfReady() {
         guard isReady, wantsToPlay else { return }
         player.play()
@@ -361,8 +346,6 @@ final class PlayerManager: ObservableObject {
         }
     }
 }
-
-// MARK: - Supporting Views
 
 struct VideoThumbnailView: View {
     let thumbnailURL: String
