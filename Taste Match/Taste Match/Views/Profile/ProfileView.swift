@@ -1,9 +1,5 @@
 import SwiftUI
 
-// MARK: - Profile View
-// Houses the Global Dietary & Allergen Profile settings. Every change here
-// is persisted immediately to both SwiftData (local) and Supabase (remote)
-// and automatically propagates to the feed and search filters.
 struct ProfileView: View {
     @ObservedObject var profileVM: ProfileViewModel
     @ObservedObject var authVM: AuthViewModel
@@ -13,9 +9,6 @@ struct ProfileView: View {
     var body: some View {
         NavigationStack {
             Form {
-
-                // Diet tag toggles — each toggle calls profileVM.toggleDietTag
-                // which updates activeDietTags and persists to Supabase.
                 Section {
                     ForEach(DietTag.allCases) { tag in
                         Toggle(tag.rawValue, isOn: Binding(
@@ -29,9 +22,6 @@ struct ProfileView: View {
                     Text("Only recipes matching ALL selected tags will appear in your feed and search results.")
                 }
 
-                // Allergen / blacklist management section.
-                // Entries are normalised to lowercase before storage so
-                // "Peanuts", "peanuts", and "PEANUTS" all match the same ingredient.
                 Section {
                     HStack {
                         TextField("e.g. peanuts, shellfish", text: $newBlacklistEntry)
@@ -48,9 +38,19 @@ struct ProfileView: View {
                             Image(systemName: "nosign")
                                 .foregroundColor(.red)
                             Text(ingredient.capitalized)
+                            
+                            Spacer()
+                            
+                            Button(action: {
+                                profileVM.removeBlacklistedIngredient(ingredient)
+                            }) {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundColor(.secondary)
+                                    .font(.title3)
+                            }
+                            .buttonStyle(.plain)
                         }
                     }
-                    // Swipe-to-delete support on the blacklist rows
                     .onDelete { indexSet in
                         indexSet.forEach { i in
                             let name = profileVM.blacklistedIngredients[i]
@@ -64,7 +64,6 @@ struct ProfileView: View {
                     Text("Recipes containing these ingredients will be completely hidden from your feed.")
                 }
 
-                // Account info and sign-out
                 Section("Account") {
                     if let user = authVM.currentUser {
                         LabeledContent("Username", value: user.username)
@@ -84,10 +83,6 @@ struct ProfileView: View {
     }
 }
 
-// MARK: - Playlist View
-// Displays the user's saved recipe collection (the "Saved" playlist).
-// Recipes are saved locally via SwiftData and synced to Supabase so the
-// playlist is available across devices.
 struct PlaylistView: View {
     @ObservedObject var profileVM: ProfileViewModel
 
@@ -99,8 +94,6 @@ struct PlaylistView: View {
                 } else {
                     List {
                         ForEach(profileVM.savedRecipes) { recipe in
-                            // Each row includes an unsave button that removes
-                            // the recipe from both the local cache and Supabase.
                             SavedRecipeRow(recipe: recipe) {
                                 profileVM.unsaveRecipe(recipe)
                             }
@@ -117,8 +110,6 @@ struct PlaylistView: View {
         }
     }
 }
-
-// MARK: - Saved Recipe Row
 
 struct SavedRecipeRow: View {
     let recipe: Recipe
@@ -147,17 +138,15 @@ struct SavedRecipeRow: View {
 
             Spacer()
 
-            // Bookmark-slash icon removes the recipe from the playlist
             Button(action: onUnsave) {
                 Image(systemName: "bookmark.slash")
                     .foregroundColor(.secondary)
             }
+            .buttonStyle(.plain)
         }
         .padding(.vertical, 4)
     }
 }
-
-// MARK: - Empty Playlist State
 
 struct EmptyPlaylistView: View {
     var body: some View {
