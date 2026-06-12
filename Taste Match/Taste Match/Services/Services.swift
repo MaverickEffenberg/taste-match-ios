@@ -98,14 +98,15 @@ struct RecipeDTO: Decodable {
     }
 }
 
+// PERBAIKAN MUTLAK: Variabel opsional (?) agar kebal terhadap NULL
 struct ProfileDTO: Decodable {
     let id: UUID
-    let username: String
-    let avatarUrl: String
-    let role: String
-    let activeDietTags: [String]
-    let blacklistedIngredients: [String]
-    let savedPlaylist: [UUID]
+    let username: String?
+    let avatarUrl: String?
+    let role: String?
+    let activeDietTags: [String]?
+    let blacklistedIngredients: [String]?
+    let savedPlaylist: [UUID]?
 
     enum CodingKeys: String, CodingKey {
         case id, username, role
@@ -232,19 +233,19 @@ final class SupabaseRecipeService: RecipeServiceProtocol {
 
 final class SupabaseProfileService: ProfileServiceProtocol {
 
-    // PERBAIKAN MUTLAK: Mengembalikan Optional (?) sesuai Protocol
     func fetchProfile() async throws -> UserProfile? {
-        // Ambil session tanpa melempar error keras jika kosong
         guard let user = try? await supabase.auth.session.user else { return nil }
 
+        // PERBAIKAN MUTLAK: Tipe opsional untuk kebal terhadap nilai NULL di Supabase
         struct ProfileRow: Decodable {
             let id: UUID
-            let username: String
-            let avatarUrl: String
-            let role: String // Menarik data role murni
-            let activeDietTags: [String]
-            let blacklistedIngredients: [String]
-            let savedPlaylist: [UUID]
+            let username: String?
+            let avatarUrl: String?
+            let role: String?
+            let activeDietTags: [String]?
+            let blacklistedIngredients: [String]?
+            let savedPlaylist: [UUID]?
+            
             enum CodingKeys: String, CodingKey {
                 case id, username, role
                 case avatarUrl = "avatar_url"
@@ -262,18 +263,17 @@ final class SupabaseProfileService: ProfileServiceProtocol {
             .execute()
             .value
 
-        // Jika tidak ada baris di database, kembalikan nil
         guard let row = rows.first else { return nil }
 
         return UserProfile(
             id: row.id,
             email: user.email ?? "",
-            username: row.username,
-            avatarURL: row.avatarUrl,
-            role: row.role,
-            activeDietTags: row.activeDietTags,
-            blacklistedIngredients: row.blacklistedIngredients,
-            savedPlaylist: row.savedPlaylist
+            username: row.username ?? "User",
+            avatarURL: row.avatarUrl ?? "",
+            role: row.role ?? "user",
+            activeDietTags: row.activeDietTags ?? [],
+            blacklistedIngredients: row.blacklistedIngredients ?? [],
+            savedPlaylist: row.savedPlaylist ?? []
         )
     }
 

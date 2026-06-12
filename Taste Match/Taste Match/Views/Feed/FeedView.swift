@@ -93,7 +93,10 @@ struct FeedView: View {
             if activeID == nil { activeID = recipes.first?.id }
         }
         .onAppear {
-            if activeID == nil { activeID = viewModel.visibleRecipes.first?.id }
+            Task {
+                await viewModel.loadFeed()
+                if activeID == nil { activeID = viewModel.visibleRecipes.first?.id }
+            }
         }
         .overlay(alignment: .top) {
             if let err = viewModel.errorMessage {
