@@ -72,75 +72,51 @@ final class SupabaseCreatorUploadService: CreatorUploadServiceProtocol {
     }
 
     func submitRecipe(_ draft: RecipeDraft, videoURL: String, thumbnailURL: String) async throws -> Recipe {
-        let userID   = try await currentUserID()
-        let session  = try await supabase.auth.session
-        let username = session.user.email?.components(separatedBy: "@").first ?? "creator"
+            let userID = try await currentUserID()
+            let session = try await supabase.auth.session
+            let username = session.user.email?.components(separatedBy: "@").first ?? "creator"
 
-        let stepsData = (try? JSONEncoder().encode(draft.steps)) ?? Data()
+            // 1. Buat struct khusus untuk insert agar Xcode bahagia
+            struct RecipeInsert: Encodable {
+                let title: String
+                let creator_id: String
+                let creator_username: String
+                let video_url: String
+                let thumbnail_url: String
+                let recipe_description: String
+                let diet_tags: [String]
+                let allergen_tags: [String]
+                let ingredients: [String]
+                let steps: [RecipeStep]
+                let is_approved: Bool
+            }
 
-        struct RecipeInsert: Encodable {
-            let title: String
-            let creator_id: String
-            let creator_username: String
-            let video_url: String
-            let thumbnail_url: String
-            let recipe_description: String
-            let diet_tags: [String]
-            let allergen_tags: [String]
-            let ingredients: [String]
-            let steps: [RecipeStep]
-            let is_approved: Bool
-        }
+            // 2. Isi struct tersebut
+            let insert = RecipeInsert(
+                title: draft.title,
+                creator_id: userID.uuidString,
+                creator_username: username,
+                video_url: videoURL,
+                thumbnail_url: thumbnailURL,
+                recipe_description: draft.description,
+                diet_tags: draft.dietTags,
+                allergen_tags: draft.allergenTags,
+                ingredients: draft.ingredients,
+                steps: draft.steps,
+                is_approved: true
+            )
 
-        let insert = RecipeInsert(
-            title: draft.title,
-            creator_id: userID.uuidString,
-            creator_username: username,
-            video_url: videoURL,
-            thumbnail_url: thumbnailURL,
-            recipe_description: draft.description,
-            diet_tags: draft.dietTags,
-            allergen_tags: draft.allergenTags,
-            ingredients: draft.ingredients,
-            steps: draft.steps,
-            is_approved: true
-        )
-
-        struct InsertedID: Decodable { let id: UUID }
-        let recipeID: UUID
-        
-        do {
-            let inserted: [InsertedID] = try await supabase
+            // 3. Eksekusi dengan cara SDK yang benar (mengirim struct Encodable)
+            let response: RecipeDTO = try await supabase
                 .from("recipes")
                 .insert(insert)
-                .select("id")
+                .select()
+                .single()
                 .execute()
                 .value
-
-            guard let id = inserted.first?.id else {
-                throw URLError(.badServerResponse)
-            }
-            recipeID = id
-        } catch {
-            print("[ERROR CATCHER - TABEL RECIPES]: \(error)")
-            throw error
+            
+            return response.toRecipe()
         }
-
-        return Recipe(
-            id: recipeID,
-            title: draft.title,
-            creatorID: userID,
-            creatorUsername: username,
-            videoURL: videoURL,
-            thumbnailURL: thumbnailURL,
-            recipeDescription: draft.description,
-            dietTags: draft.dietTags,
-            allergenTags: draft.allergenTags,
-            ingredients: draft.ingredients,
-            steps: stepsData,
-            createdAt: Date()
-        )
-    }
 
     func fetchMySubmissions() async throws -> [CreatorSubmission] {
         let userID = try await currentUserID()
