@@ -21,21 +21,19 @@ struct TasteMatchApp: App {
     }
 
     var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            UserProfile.self,
-            Recipe.self,
-            MasterIngredient.self,
-            MasterDietTag.self,
-            PendingContent.self,
-            RecipeCache.self
-        ])
-        let config = ModelConfiguration(isStoredInMemoryOnly: false)
-        do {
-            return try ModelContainer(for: schema, configurations: [config])
-        } catch {
-            fatalError("Failed to create ModelContainer: \(error)")
-        }
-    }()
+            let schema = Schema([
+                UserProfile.self,
+                Recipe.self,
+                MasterIngredient.self,
+                MasterDietTag.self
+            ])
+            let config = ModelConfiguration(isStoredInMemoryOnly: false)
+            do {
+                return try ModelContainer(for: schema, configurations: [config])
+            } catch {
+                fatalError("Failed to create ModelContainer: \(error)")
+            }
+        }()
 
     var body: some Scene {
         WindowGroup {
