@@ -1,15 +1,10 @@
 import Foundation
 import Supabase
 
-// Shared Supabase client — single instance used by every service in the app.
-// IMPORTANT: the URL must be the bare project base URL, NOT the REST endpoint.
-// Using /rest/v1/ here breaks auth, storage, and realtime entirely.
 let supabase = SupabaseClient(
     supabaseURL: URL(string: "https://ainrjrzdmblhhfylwrbd.supabase.co")!,
     supabaseKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFpbnJqcnpkbWJsaGhmeWx3cmJkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwMDI1MjUsImV4cCI6MjA5NTU3ODUyNX0.oYRUBqCMlkqW6XwFdRG_wYk_2No_ClO3mKlMpkr3keo"
 )
-
-// MARK: - Service Protocols
 
 protocol AuthServiceProtocol {
     func signInWithGoogle() async throws -> UserProfile
@@ -29,6 +24,7 @@ protocol ProfileServiceProtocol {
     func updateProfile(dietTags: [String], blacklist: [String]) async throws
     func saveRecipe(_ recipeID: UUID) async throws
     func unsaveRecipe(_ recipeID: UUID) async throws
+    func fetchSavedRecipesDetails(for ids: [UUID]) async throws -> [Recipe]
 }
 
 protocol AdminServiceProtocol {
@@ -47,8 +43,6 @@ extension AdminServiceProtocol {
         try await updateContentStatus(id, status: status, note: note)
     }
 }
-
-// MARK: - DTOs
 
 struct RecipeDTO: Decodable {
     let id: UUID
@@ -98,7 +92,6 @@ struct RecipeDTO: Decodable {
     }
 }
 
-// PERBAIKAN MUTLAK: Variabel opsional (?) agar kebal terhadap NULL
 struct ProfileDTO: Decodable {
     let id: UUID
     let username: String?
@@ -116,8 +109,6 @@ struct ProfileDTO: Decodable {
         case savedPlaylist            = "saved_playlist"
     }
 }
-
-// MARK: - Auth Service
 
 final class SupabaseAuthService: AuthServiceProtocol {
 
@@ -182,8 +173,6 @@ final class SupabaseAuthService: AuthServiceProtocol {
     }
 }
 
-// MARK: - Recipe Service
-
 final class SupabaseRecipeService: RecipeServiceProtocol {
 
     func fetchApprovedRecipes() async throws -> [Recipe] {
@@ -229,14 +218,11 @@ final class SupabaseRecipeService: RecipeServiceProtocol {
     }
 }
 
-// MARK: - Profile Service
-
 final class SupabaseProfileService: ProfileServiceProtocol {
 
     func fetchProfile() async throws -> UserProfile? {
         guard let user = try? await supabase.auth.session.user else { return nil }
 
-        // PERBAIKAN MUTLAK: Tipe opsional untuk kebal terhadap nilai NULL di Supabase
         struct ProfileRow: Decodable {
             let id: UUID
             let username: String?
@@ -320,9 +306,19 @@ final class SupabaseProfileService: ProfileServiceProtocol {
             ))
             .execute()
     }
-}
 
-// MARK: - Admin Service
+    func fetchSavedRecipesDetails(for ids: [UUID]) async throws -> [Recipe] {
+        guard !ids.isEmpty else { return [] }
+        let idStrings = ids.map { $0.uuidString }
+        let response: [RecipeDTO] = try await supabase
+            .from("recipes")
+            .select()
+            .in("id", values: idStrings)
+            .execute()
+            .value
+        return response.map { $0.toRecipe() }
+    }
+}
 
 final class SupabaseAdminService: AdminServiceProtocol {
 

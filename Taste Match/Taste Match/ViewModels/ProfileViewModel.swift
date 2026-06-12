@@ -36,7 +36,14 @@ final class ProfileViewModel: ObservableObject {
         currentUser = remote
         activeDietTags = remote.activeDietTags
         blacklistedIngredients = remote.blacklistedIngredients
-        savedRecipes = localStore.fetchSavedRecipes(for: remote)
+
+        if !remote.savedPlaylist.isEmpty {
+            if let liveRecipes = try? await profileService.fetchSavedRecipesDetails(for: remote.savedPlaylist) {
+                savedRecipes = liveRecipes
+            }
+        } else {
+            savedRecipes = []
+        }
     }
 
     func toggleDietTag(_ tag: String) {
@@ -70,7 +77,7 @@ final class ProfileViewModel: ObservableObject {
 
     func saveRecipe(_ recipe: Recipe) {
         guard !savedRecipes.contains(where: { $0.id == recipe.id }) else { return }
-        savedRecipes.append(recipe)
+        savedRecipes.insert(recipe, at: 0)
         localStore.saveRecipe(recipe, for: currentUser)
         Task { try? await profileService.saveRecipe(recipe.id) }
     }
