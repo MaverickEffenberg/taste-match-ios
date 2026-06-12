@@ -61,9 +61,9 @@ struct RecipeDTO: Decodable {
     let dietTags: [String]
     let allergenTags: [String]
     let ingredients: [String]
+    let steps: [RecipeStep]?
     let createdAt: Date
     
-
     enum CodingKeys: String, CodingKey {
         case id, title
         case creatorId          = "creator_id"
@@ -74,11 +74,14 @@ struct RecipeDTO: Decodable {
         case dietTags           = "diet_tags"
         case allergenTags       = "allergen_tags"
         case ingredients
+        case steps              = "steps"
         case createdAt          = "created_at"
     }
-
+    
     func toRecipe() -> Recipe {
-        Recipe(
+        let stepsData = (try? JSONEncoder().encode(steps ?? [])) ?? Data()
+        
+        return Recipe(
             id: id,
             title: title,
             creatorID: creatorId,
@@ -89,6 +92,7 @@ struct RecipeDTO: Decodable {
             dietTags: dietTags,
             allergenTags: allergenTags,
             ingredients: ingredients,
+            steps: stepsData,
             createdAt: createdAt
         )
     }
